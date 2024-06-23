@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id Int @id @default(autoincrement())
+  firstName String
+  middleName String?
+  lastName String
+  mobileNo String
+  email String @unique
+  password String
+  orgName String
+}
+
+model School {
+  id              Int       @id @default(autoincrement())
+  instituteName   String
+  address         String
+  identificationNo String
+  principalName   String
+  mobileNo        String
+  teachers        Teacher[]
+  children        Child[]
+}
+
+model Teacher {
+  id            Int       @id @default(autoincrement())
+  firstName     String
+  middleName    String?
+  lastName      String
+  mobileNo      String
+  email         String    @unique
+  password      String
+  school        School    @relation(fields: [schoolId], references: [id])
+  schoolId      Int
+}
+
+model Child {
+  id            Int       @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  dob DateTime
+  pob String
+  nationality String
+  gender String
+  bloodGroup String
+  age Int
+  preSchool String?
+  school        School    @relation(fields: [schoolId], references: [id])
+  schoolId      Int
+  admissionNo String
+  attendance Attendance[]
+
+  class String
+  mother Mother @relation(fields: [motherId], references: [id])
+  motherId Int 
+  father Father @relation(fields: [fatherId], references: [id])
+  fatherId Int
+  releasePerson ReleasePerson @relation(fields: [releasePersonId], references: [id])
+  releasePersonId Int
+  emergencyPerson EmergencyPerson @relation(fields: [emergencyPersonId], references: [id])
+  emergencyPersonId Int
+
+}
+
+model Mother {
+  id            Int       @id @default(autoincrement())
+  name String
+  mobileNo String
+  address String
+  email String @unique
+  password String
+  profession String
+  child Child[]
+
+}
+
+model Father {
+  id            Int       @id @default(autoincrement())
+  name String
+  mobileNo String
+  address String
+  email String @unique
+  password String
+  profession String
+  child Child[]
+
+}
+
+model EmergencyPerson {
+  id            Int       @id @default(autoincrement())
+  name String
+  relationship String
+  mobileNo String
+  child Child[]
+}
+
+model ReleasePerson {
+  id            Int       @id @default(autoincrement())
+  name String
+  relationship String
+  mobileNo String
+  child Child[]
+  
+}
+
+model Attendance {
+  id            Int       @id @default(autoincrement())
+  date DateTime
+  isPresent Boolean
+  child Child @relation(fields: [childId], references: [id])
+  childId Int 
+}
